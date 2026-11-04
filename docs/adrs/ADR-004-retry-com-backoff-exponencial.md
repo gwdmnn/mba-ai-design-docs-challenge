@@ -1,11 +1,11 @@
 ### ADR-004: Retentar entregas com backoff exponencial e teto de 5 tentativas
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-005, ADR-007
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: ADR-005, ADR-007 
+Amends: nenhum 
 
 ---
 

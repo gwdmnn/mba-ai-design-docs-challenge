@@ -1,11 +1,11 @@
 ### ADR-001: Registrar eventos de webhook com outbox no MySQL, na mesma transação da mudança de status
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-002, ADR-003, ADR-007, ADR-008
-Amends: nenhum
+Status: aceito  
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)  
+Supersedes: nenhum  
+Superseded by: nenhum  
+Related to: ADR-002, ADR-003, ADR-007, ADR-008  
+Amends: nenhum  
 
 ---
 

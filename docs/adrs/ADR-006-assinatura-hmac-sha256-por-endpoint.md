@@ -1,11 +1,11 @@
 ### ADR-006: Assinar webhooks com HMAC-SHA256 e secret rotacionável por endpoint
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: nenhum
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: nenhum 
+Amends: nenhum 
 
 ---
 

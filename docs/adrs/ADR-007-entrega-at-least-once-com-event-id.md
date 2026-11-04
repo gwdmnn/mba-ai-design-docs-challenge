@@ -1,11 +1,11 @@
 ### ADR-007: Garantir entrega at-least-once com deduplicação por X-Event-Id no cliente
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-001, ADR-004
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: ADR-001, ADR-004 
+Amends: nenhum 
 
 ---
 

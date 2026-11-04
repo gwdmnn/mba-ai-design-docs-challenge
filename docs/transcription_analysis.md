@@ -1,15 +1,5 @@
 # Análise da transcrição
 
-## Estado da execução
-
-| Etapa | Estado | Resultado |
-| --- | --- | --- |
-| 1. Triagem da transcrição | Concluída | 71 itens considerados e 26 descartados, feita por agente especializado |
-| 2. Identificação de candidatas | Concluída | 15 candidatas |
-| 3. Corte para o limite de 8 ADRs | Concluída | 8 ADRs mantidas e 7 candidatas movidas ou sem ADR |
-| 4. Redação das ADRs | Concluída | ADR-001 a ADR-008 em `docs/adrs/` |
-| 5. Verificação | Concluída | Ver "Verificação das ADRs" |
-
 ## Triagem da transcrição
 
 ### Considerado

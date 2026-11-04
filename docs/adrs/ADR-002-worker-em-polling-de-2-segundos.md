@@ -1,11 +1,11 @@
 ### ADR-002: Ler a outbox com worker em polling a cada 2 segundos
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-001, ADR-003
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: ADR-001, ADR-003 
+Amends: nenhum 
 
 ---
 

@@ -1,11 +1,11 @@
 ### ADR-005: Persistir falhas permanentes na tabela separada webhook_dead_letter
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-001, ADR-004
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: ADR-001, ADR-004 
+Amends: nenhum 
 
 ---
 

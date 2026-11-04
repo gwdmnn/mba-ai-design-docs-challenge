@@ -1,11 +1,11 @@
 ### ADR-003: Executar o worker de webhooks em processo separado da API
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-001, ADR-002
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: ADR-001, ADR-002 
+Amends: nenhum 
 
 ---
 

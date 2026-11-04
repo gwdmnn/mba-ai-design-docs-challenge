@@ -1,11 +1,11 @@
 ### ADR-008: Guardar na outbox o payload renderizado no momento da inserção
 
-Status: aceito
-Data: quinta-feira, 09:00 (data de calendário não informada na transcrição)
-Supersedes: nenhum
-Superseded by: nenhum
-Related to: ADR-001
-Amends: nenhum
+Status: aceito 
+Data: quinta-feira, 09:00 (data de calendário não informada na transcrição) 
+Supersedes: nenhum 
+Superseded by: nenhum 
+Related to: ADR-001 
+Amends: nenhum 
 
 ---
 

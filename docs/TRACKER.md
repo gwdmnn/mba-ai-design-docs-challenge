@@ -40,6 +40,7 @@
 | LAC-02 | `docs/adrs/ADR-005-dead-letter-em-tabela-separada.md` | Ponto em Aberto | O papel do status "falhou" da outbox ao lado da DLQ não foi definido | TRANSCRICAO | [09:08] Diego; [09:18] Diego |
 | LAC-03 | `docs/adrs/ADR-006-assinatura-hmac-sha256-por-endpoint.md` | Ponto em Aberto | A forma de armazenar a secret e qual secret assina durante o grace period não foram definidas | TRANSCRICAO | [09:21] Sofia; [09:22] Sofia |
 | RFC-META-01 | `docs/RFC.md` | Contexto | Autoria do RFC atribuída a Larissa, que abrirá o doc de design e marcará revisão com Bruno e Diego | TRANSCRICAO | [09:50] Larissa |
+| RFC-META-02 | `docs/RFC.md` | Contexto | Revisores são os cinco participantes da reunião, com seus papéis | TRANSCRICAO | Cabeçalho, lista de Participantes |
 | RFC-CTX-01 | `docs/RFC.md` | Contexto | Clientes consultam `GET /orders` periodicamente, o que deixa a integração lenta e cara | TRANSCRICAO | [09:00] Marcos |
 | RFC-CTX-02 | `docs/RFC.md` | Requisito Não Funcional | Entrega abaixo de 10 segundos é considerada "tempo real" pelos clientes | TRANSCRICAO | [09:02] Marcos |
 | RFC-CTX-03 | `docs/RFC.md` | Restrição | Transação de `changeStatus` já é pesada; HTTP síncrono travaria outros pedidos | TRANSCRICAO | [09:04] Bruno |
@@ -50,9 +51,9 @@
 | RFC-PROP-01 | `docs/RFC.md` | Decisão | Outbox no MySQL na transação de `changeStatus`, com rollback se a inserção falhar (consolida ADR-001) | TRANSCRICAO | [09:06] Diego; [09:40] Bruno; [09:41] Diego |
 | RFC-PROP-02 | `docs/RFC.md` | Decisão | `webhook_outbox` com status, índices em status e `created_at`, id UUID e payload snapshot (consolida ADR-001 e ADR-008) | TRANSCRICAO | [09:08] Diego; [09:51] Larissa; [09:52] Larissa |
 | RFC-PROP-03 | `docs/RFC.md` | Decisão | Configuração de webhook com url, secret, `customer_id`, estado ativo e lista de status | TRANSCRICAO | [09:21] Bruno; [09:21] Sofia; [09:33] Marcos |
-| RFC-PROP-04 | `docs/RFC.md` | Decisão | Worker em processo separado com polling de 2 segundos (consolida ADR-002 e ADR-003) | TRANSCRICAO | [09:09] Diego; [09:11] Diego; [09:11] Larissa; [09:30] Bruno |
+| RFC-PROP-04 | `docs/RFC.md` | Decisão | Worker em processo separado com polling de 2 segundos, suficiente para o requisito de latência (consolida ADR-002 e ADR-003) | TRANSCRICAO | [09:09] Diego; [09:10] Marcos; [09:11] Diego; [09:11] Larissa; [09:30] Bruno |
 | RFC-PROP-05 | `docs/RFC.md` | Decisão | Retry 1m/5m/30m/2h/12h e DLQ em `webhook_dead_letter` com replay manual (consolida ADR-004 e ADR-005) | TRANSCRICAO | [09:17] Diego; [09:17] Larissa; [09:18] Diego |
-| RFC-PROP-06 | `docs/RFC.md` | Decisão | HMAC-SHA256 com secret por endpoint e at-least-once com `X-Event-Id` (consolida ADR-006 e ADR-007) | TRANSCRICAO | [09:22] Sofia; [09:25] Diego; [09:26] Larissa |
+| RFC-PROP-06 | `docs/RFC.md` | Decisão | HMAC-SHA256 em `X-Signature` com secret por endpoint e at-least-once com `X-Event-Id` (consolida ADR-006 e ADR-007) | TRANSCRICAO | [09:20] Sofia; [09:22] Sofia; [09:25] Diego; [09:26] Larissa; [09:44] Diego |
 | RFC-PROP-07 | `docs/RFC.md` | Decisão | Módulo `src/modules/webhooks` reaproveitando `AppError`, Pino e middleware de erro | TRANSCRICAO | [09:27] Bruno; [09:30] Larissa |
 | RFC-ALT-01 | `docs/RFC.md` | Alternativa Descartada | Disparo síncrono no service de orders (ver ADR-001-ALT-01) | TRANSCRICAO | [09:03] Larissa; [09:04] Bruno; [09:06] Diego |
 | RFC-ALT-02 | `docs/RFC.md` | Alternativa Descartada | Redis Streams ou similar (ver ADR-001-ALT-02) | TRANSCRICAO | [09:07] Larissa; [09:07] Diego |

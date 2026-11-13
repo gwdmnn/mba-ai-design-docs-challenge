@@ -149,3 +149,75 @@
 | FDD-INT-08 | `docs/FDD.md` | Integração | Importar `env.ts` no worker torna `DATABASE_URL` e `JWT_SECRET` obrigatórios para ele | CODIGO | `src/config/env.ts` |
 | FDD-INT-09 | `docs/FDD.md` | Integração | Novo script `worker` | CODIGO | `package.json` |
 | FDD-INT-10 | `docs/FDD.md` | Integração | Novas tabelas precisam entrar na limpeza do `beforeEach` dos testes | CODIGO | `tests/setup.ts` |
+| PRD-META-01 | `docs/PRD.md` | Contexto | Responsável de produto pelo PRD é Marcos, Product Manager | TRANSCRICAO | Cabeçalho, lista de Participantes |
+| PRD-CTX-01 | `docs/PRD.md` | Contexto | Atlas Comercial, MaxDistribuição e Nova Cargo pediram formalmente notificação de mudança de status (ver RFC-CTX-01) | TRANSCRICAO | [09:00] Marcos |
+| PRD-CTX-02 | `docs/PRD.md` | Contexto | Plataforma não emite eventos; não existe módulo de webhooks (ver RFC-CTX-06) | CODIGO | `src/modules/` |
+| PRD-PROB-01 | `docs/PRD.md` | Contexto | Consulta periódica a `GET /orders` deixa a integração lenta e cara | TRANSCRICAO | [09:00] Marcos |
+| PRD-PROB-02 | `docs/PRD.md` | Contexto | Atlas pode migrar para o concorrente se a feature não for entregue no prazo | TRANSCRICAO | [09:00] Marcos |
+| PRD-PROB-03 | `docs/PRD.md` | Restrição | Prazo da Atlas citado como fim do trimestre e como fim de novembro (ver RFC-OPEN-18) | TRANSCRICAO | [09:00] Marcos; [09:45] Marcos |
+| PRD-PUB-01 | `docs/PRD.md` | Contexto | Público-alvo: clientes B2B, usuários que representam o cliente e ADMIN (ver FDD-CTX-04) | TRANSCRICAO | [09:00] Marcos; [09:32] Marcos; [09:36] Sofia |
+| PRD-CEN-01 | `docs/PRD.md` | Cenário | Cadastro de webhook com lista `SHIPPED` e `DELIVERED` e secret devolvida na criação | TRANSCRICAO | [09:31] Marcos; [09:33] Marcos |
+| PRD-CEN-02 | `docs/PRD.md` | Cenário | Entrega assinada em menos de 10 segundos, com verificação de HMAC e deduplicação no cliente | TRANSCRICAO | [09:02] Marcos; [09:20] Sofia; [09:25] Diego |
+| PRD-CEN-03 | `docs/PRD.md` | Cenário | Manutenção planejada de duas horas coberta pelas retentativas | TRANSCRICAO | [09:16] Diego; [09:17] Diego |
+| PRD-CEN-04 | `docs/PRD.md` | Cenário | Indisponibilidade além de quase 15 horas leva à dead letter e ao replay manual por ADMIN | TRANSCRICAO | [09:17] Marcos; [09:18] Diego; [09:36] Sofia |
+| PRD-CEN-05 | `docs/PRD.md` | Cenário | Rotação de secret após vazamento, com 24 horas para migrar | TRANSCRICAO | [09:21] Sofia; [09:22] Diego |
+| PRD-CEN-06 | `docs/PRD.md` | Cenário | Consulta ao histórico de entregas de um webhook | TRANSCRICAO | [09:34] Marcos |
+| PRD-OBJ-01 | `docs/PRD.md` | Métrica | Entrega em menos de 10 segundos após a mudança de status, em três sprints (ver RFC-CTX-02, RFC-IMP-04) | TRANSCRICAO | [09:02] Marcos; [09:46] Larissa; [09:47] Larissa |
+| PRD-OBJ-02 | `docs/PRD.md` | Métrica | Zero mudanças de status commitadas sem evento na outbox (ver ADR-001-TO-01) | TRANSCRICAO | [09:40] Bruno; [09:41] Diego |
+| PRD-OBJ-03 | `docs/PRD.md` | Métrica | 5 tentativas por evento; inclusão do envio inicial em aberto (ver ADR-004, RFC-OPEN-03) | TRANSCRICAO | [09:15] Diego; [09:17] Larissa |
+| PRD-ESC-01 | `docs/PRD.md` | Escopo | Itens incluídos consolidados do escopo do FDD e do resumo final da reunião | TRANSCRICAO | [09:48] Larissa |
+| PRD-ESC-02 | `docs/PRD.md` | Escopo | Documentação de integração no portal de desenvolvedor | TRANSCRICAO | [09:26] Marcos; [09:40] Marcos |
+| PRD-FORA-01 | `docs/PRD.md` | Fora de Escopo | Webhooks de entrada, descartado | TRANSCRICAO | [09:02] Marcos; [09:03] Sofia |
+| PRD-FORA-02 | `docs/PRD.md` | Fora de Escopo | Email ao cliente em caso de falha, adiado para a próxima fase | TRANSCRICAO | [09:37] Larissa; [09:38] Marcos; [09:48] Larissa |
+| PRD-FORA-03 | `docs/PRD.md` | Fora de Escopo | Dashboard visual, adiado; projeto separado do time de frontend | TRANSCRICAO | [09:40] Larissa |
+| PRD-FORA-04 | `docs/PRD.md` | Fora de Escopo | Rate limiting de envio, adiado (ver RFC-OPEN-01) | TRANSCRICAO | [09:39] Diego; [09:39] Larissa |
+| PRD-FORA-05 | `docs/PRD.md` | Fora de Escopo | Arquivamento das linhas entregues da outbox, adiado | TRANSCRICAO | [09:08] Diego |
+| PRD-FORA-06 | `docs/PRD.md` | Fora de Escopo | Exactly-once, descartado (ver ADR-007-ALT-01) | TRANSCRICAO | [09:25] Diego |
+| PRD-FORA-07 | `docs/PRD.md` | Fora de Escopo | Ordenação global e múltiplos workers, adiado (ver RFC-OPEN-02) | TRANSCRICAO | [09:13] Diego; [09:13] Larissa; [09:14] Marcos |
+| PRD-FR-00 | `docs/PRD.md` | Restrição | Priorização entre requisitos funcionais não definida na reunião; entrega única de três sprints | TRANSCRICAO | [09:46] Larissa; [09:48] Larissa |
+| PRD-FR-01 | `docs/PRD.md` | Requisito Funcional | Cadastrar webhook com url e lista de status; secret gerada e devolvida na criação (ver FDD-CONTRATO-02) | TRANSCRICAO | [09:31] Marcos |
+| PRD-FR-02 | `docs/PRD.md` | Requisito Funcional | Listar webhooks de um customer (ver FDD-CONTRATO-03) | TRANSCRICAO | [09:33] Bruno |
+| PRD-FR-03 | `docs/PRD.md` | Requisito Funcional | Editar configuração de webhook (ver FDD-CONTRATO-04) | TRANSCRICAO | [09:33] Bruno; [09:21] Bruno |
+| PRD-FR-04 | `docs/PRD.md` | Requisito Funcional | Remover webhook (ver FDD-CONTRATO-05) | TRANSCRICAO | [09:33] Bruno |
+| PRD-FR-05 | `docs/PRD.md` | Requisito Funcional | Recusar url não `https` com erro de validação | TRANSCRICAO | [09:23] Sofia |
+| PRD-FR-06 | `docs/PRD.md` | Requisito Funcional | Filtro por lista de status na inserção da outbox (ver FDD-ESC-01) | TRANSCRICAO | [09:33] Marcos; [09:34] Bruno |
+| PRD-FR-07 | `docs/PRD.md` | Requisito Funcional | Payload JSON da entrega, sem items (ver FDD-CONTRATO-09) | TRANSCRICAO | [09:43] Diego; [09:44] Bruno |
+| PRD-FR-08 | `docs/PRD.md` | Requisito Funcional | Headers da entrega (ver FDD-CONTRATO-10) | TRANSCRICAO | [09:44] Diego; [09:44] Sofia; [09:45] Diego |
+| PRD-FR-09 | `docs/PRD.md` | Requisito Funcional | Retry com backoff 1m/5m/30m/2h/12h e dead letter (ver ADR-004, ADR-005) | TRANSCRICAO | [09:17] Diego; [09:18] Diego |
+| PRD-FR-10 | `docs/PRD.md` | Requisito Funcional | Replay manual da dead letter por ADMIN (ver FDD-CONTRATO-08) | TRANSCRICAO | [09:18] Diego; [09:36] Sofia |
+| PRD-FR-11 | `docs/PRD.md` | Requisito Funcional | Rotação de secret pela API com grace period de 24 horas (ver FDD-FLUXO-04) | TRANSCRICAO | [09:21] Sofia |
+| PRD-FR-12 | `docs/PRD.md` | Requisito Funcional | Histórico de entregas por webhook (ver FDD-CONTRATO-07) | TRANSCRICAO | [09:34] Marcos |
+| PRD-RNF-01 | `docs/PRD.md` | Requisito Não Funcional | Entrega em menos de 10 segundos (ver RFC-CTX-02) | TRANSCRICAO | [09:02] Marcos |
+| PRD-RNF-02 | `docs/PRD.md` | Requisito Não Funcional | Polling de 2 segundos em batch pequeno (ver ADR-002) | TRANSCRICAO | [09:08] Diego; [09:09] Diego |
+| PRD-RNF-03 | `docs/PRD.md` | Requisito Não Funcional | Timeout de 10 segundos por chamada (ver FDD-OBJ-02) | TRANSCRICAO | [09:42] Diego |
+| PRD-RNF-04 | `docs/PRD.md` | Requisito Não Funcional | 5 tentativas com backoff; inclusão do envio inicial em aberto (ver RFC-OPEN-03) | TRANSCRICAO | [09:15] Diego; [09:17] Larissa |
+| PRD-RNF-05 | `docs/PRD.md` | Requisito Não Funcional | Worker em processo separado (ver ADR-003) | TRANSCRICAO | [09:11] Diego |
+| PRD-RNF-06 | `docs/PRD.md` | Requisito Não Funcional | Atomicidade entre mudança de status e outbox (ver ADR-001) | TRANSCRICAO | [09:06] Diego; [09:40] Bruno |
+| PRD-RNF-07 | `docs/PRD.md` | Requisito Não Funcional | At-least-once com `X-Event-Id` (ver ADR-007) | TRANSCRICAO | [09:24] Diego; [09:25] Diego |
+| PRD-RNF-08 | `docs/PRD.md` | Requisito Não Funcional | Payload snapshot na inserção (ver ADR-008) | TRANSCRICAO | [09:52] Larissa |
+| PRD-RNF-09 | `docs/PRD.md` | Requisito Não Funcional | Ordem só por `order_id` com single-worker (ver FDD-CTX-05) | TRANSCRICAO | [09:12] Diego; [09:13] Larissa |
+| PRD-RNF-10 | `docs/PRD.md` | Requisito Não Funcional | Secret única por endpoint (ver ADR-006) | TRANSCRICAO | [09:21] Sofia |
+| PRD-RNF-11 | `docs/PRD.md` | Requisito Não Funcional | Url sempre `https` | TRANSCRICAO | [09:23] Sofia |
+| PRD-RNF-12 | `docs/PRD.md` | Requisito Não Funcional | CRUD para qualquer role autenticada; replay exige ADMIN | TRANSCRICAO | [09:36] Sofia; [09:36] Larissa; [09:37] Sofia |
+| PRD-RNF-12-COD | `docs/PRD.md` | Integração | `authenticate` e `requireRole` existentes atendem ao controle de acesso | CODIGO | `src/middlewares/auth.middleware.ts` |
+| PRD-RNF-13 | `docs/PRD.md` | Requisito Não Funcional | Replay logado com o autor, para auditoria | TRANSCRICAO | [09:36] Sofia |
+| PRD-RNF-14 | `docs/PRD.md` | Requisito Não Funcional | Payload até 64KB, com erro se ultrapassado (ver FDD-OBJ-03) | TRANSCRICAO | [09:23] Sofia; [09:24] Larissa |
+| PRD-RNF-15 | `docs/PRD.md` | Requisito Não Funcional | Reuso de `AppError`, Pino, middleware de erro, Zod e prefixo `WEBHOOK_` (ver FDD-OBJ-04) | TRANSCRICAO | [09:29] Larissa; [09:30] Larissa |
+| PRD-DEC-01 | `docs/PRD.md` | Decisão | Tabela de decisões e trade-offs resume ADR-001 a ADR-008 (ver ADR-001-TO-01 a ADR-007-TO-01) | TRANSCRICAO | [09:48] Larissa; [09:52] Bruno |
+| PRD-DEP-01 | `docs/PRD.md` | Dependência | Revisão de segurança de Sofia antes do deploy (ver FDD-ACEITE-03) | TRANSCRICAO | [09:46] Sofia; [09:49] Sofia |
+| PRD-DEP-02 | `docs/PRD.md` | Dependência | Revisão do doc de design por Bruno e Diego antes de codar (ver FDD-META-01) | TRANSCRICAO | [09:50] Larissa |
+| PRD-DEP-03 | `docs/PRD.md` | Dependência | Documentação no portal de desenvolvedor por Marcos (ver RFC-IMP-03) | TRANSCRICAO | [09:26] Marcos; [09:40] Marcos |
+| PRD-DEP-04 | `docs/PRD.md` | Dependência | Confirmação do prazo com a Atlas por Marcos | TRANSCRICAO | [09:47] Marcos |
+| PRD-DEP-05 | `docs/PRD.md` | Dependência | Endpoint `https` do cliente respondendo em até 10 segundos | TRANSCRICAO | [09:23] Sofia; [09:42] Diego |
+| PRD-DEP-06 | `docs/PRD.md` | Dependência | Deduplicação por `X-Event-Id` no sistema do cliente | TRANSCRICAO | [09:24] Diego; [09:25] Diego |
+| PRD-RISK-01 | `docs/PRD.md` | Risco | Cliente indisponível além de quase 15 horas: probabilidade baixa, impacto baixo (ver RFC-RISK-04) | TRANSCRICAO | [09:16] Diego; [09:17] Diego; [09:17] Marcos |
+| PRD-RISK-02 | `docs/PRD.md` | Risco | Perda de ordenação com múltiplos workers: probabilidade baixa, impacto baixo (ver RFC-RISK-07) | TRANSCRICAO | [09:13] Diego; [09:14] Marcos |
+| PRD-RISK-03 | `docs/PRD.md` | Risco | Payload acima de 64KB: probabilidade baixa | TRANSCRICAO | [09:23] Sofia; [09:24] Diego; [09:43] Diego |
+| PRD-RISK-04 | `docs/PRD.md` | Risco | Não entregar no prazo da Atlas: impacto alto, migração para o concorrente (ver RFC-RISK-08) | TRANSCRICAO | [09:00] Marcos; [09:46] Larissa; [09:47] Marcos |
+| PRD-RISK-05 | `docs/PRD.md` | Risco | Vazamento de secret, já ocorrido uma vez (ver RFC-RISK-06) | TRANSCRICAO | [09:21] Sofia; [09:22] Diego; [09:46] Sofia |
+| PRD-RISK-06 | `docs/PRD.md` | Risco | Evento recebido mais de uma vez (ver RFC-RISK-03) | TRANSCRICAO | [09:24] Diego; [09:26] Marcos |
+| PRD-ACEITE-01 | `docs/PRD.md` | Critério de Aceite | Critérios observáveis vinculados a RF-01 a RF-12 e RNF, derivados dos critérios técnicos do FDD (ver FDD-ACEITE-01) | TRANSCRICAO | [09:06] Diego; [09:23] Sofia; [09:34] Marcos; [09:36] Sofia; [09:44] Diego |
+| PRD-TESTE-01 | `docs/PRD.md` | Validação | Revisão técnica de design com Bruno e Diego antes de codar | TRANSCRICAO | [09:50] Larissa |
+| PRD-TESTE-02 | `docs/PRD.md` | Validação | Testes ponta a ponta previstos na estimativa | TRANSCRICAO | [09:46] Larissa |
+| PRD-TESTE-03 | `docs/PRD.md` | Validação | Testes com Vitest e Supertest contra MySQL real (ver FDD-ACEITE-02) | CODIGO | `tests/orders.test.ts` |
+| PRD-TESTE-04 | `docs/PRD.md` | Validação | Revisão de segurança de HMAC e geração de secret | TRANSCRICAO | [09:46] Sofia |

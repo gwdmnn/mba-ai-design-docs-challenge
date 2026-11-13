@@ -43,7 +43,7 @@ flowchart LR
 - Invariante de atomicidade: toda mudança de status que gere evento commita junto com a linha na `webhook_outbox`; se a inserção falhar, a mudança de status sofre rollback (ADR-001).
 - Garantia at-least-once, com `X-Event-Id` (UUID gerado na entrada da outbox) único por evento para deduplicação no cliente (ADR-007).
 - Toda entrega assinada com HMAC-SHA256 sobre o corpo do request, com secret única por endpoint (ADR-006).
-- Todo evento termina em entrega ou em falha permanente registrada na `webhook_dead_letter`, após no máximo 5 tentativas no total, incluindo o envio inicial, com backoff exponencial (ADR-004; ADR-005).
+- Todo evento termina em entrega ou em falha permanente registrada na `webhook_dead_letter`, após 5 tentativas com backoff de 1m, 5m, 30m, 2h e 12h (ADR-004; ADR-005).
 - Timeout de 10 segundos por chamada HTTP do worker.
 - Payload limitado a 64KB, com erro se ultrapassado.
 - Reuso dos padrões existentes sem alteração do middleware de erro: `AppError`, Pino, `errorMiddleware`, padrão de módulos e schemas Zod, códigos de erro com prefixo `WEBHOOK_`.
@@ -88,7 +88,7 @@ flowchart LR
 - Nenhum webhook do customer escuta `toStatus`: nada é inserido na outbox e a mudança de status segue normalmente.
 - Falha na inserção da outbox: a exceção propaga para fora do `$transaction`, todo o `changeStatus` sofre rollback e o erro chega ao `errorMiddleware` via `next(err)` (`src/modules/orders/order.controller.ts`, `src/middlewares/error.middleware.ts`).
 - Cliente lento (sem resposta em 10 segundos) ou indisponível: a entrega é tratada como falha e marcada para retry.
-- Retry: o evento recebe no máximo 5 tentativas no total, incluindo o envio inicial, com a progressão de backoff de 1m, 5m, 30m, 2h e 12h (ADR-004).
+- Retry: novas tentativas após 1m, 5m, 30m, 2h e 12h, cobrindo quase 15 horas entre a primeira falha e a última tentativa (ADR-004).
 - Tentativas esgotadas: falha permanente; o evento vai para a `webhook_dead_letter` com payload, motivo da falha e timestamp (ADR-005).
 - Replay: um ADMIN chama `POST /admin/webhooks/dead-letter/:id/replay`, o evento volta para a outbox como pendente e o replay é registrado em log com o autor, para auditoria.
 - Payload acima de 64KB: o evento não é enviado e é gerado erro.
@@ -117,8 +117,8 @@ sequenceDiagram
     alt sucesso
         W->>DB: marca evento como entregue
     else falha ou timeout
-        W->>DB: agenda nova tentativa conforme o backoff
-    else 5 tentativas esgotadas
+        W->>DB: agenda retry (1m, 5m, 30m, 2h, 12h)
+    else tentativas esgotadas
         W->>DB: insert webhook_dead_letter (payload, motivo, timestamp)
     end
 ```
@@ -352,7 +352,7 @@ Os códigos do módulo usam o prefixo `WEBHOOK_`. A coluna Rastreio aponta o ID 
 | Payload acima de 64KB | não se aplica | não se aplica | O evento não é enviado e é gerado erro | FDD-OBJ-03 |
 | Cliente sem resposta em 10 segundos | não se aplica (worker) | não se aplica | Falha da tentativa, marcada para retry | FDD-OBJ-02 |
 | Cliente indisponível ou com falha na entrega | não se aplica (worker) | não se aplica | Falha da tentativa; nova tentativa conforme o backoff | FDD-RES-01 |
-| 5 tentativas esgotadas | não se aplica (worker) | não se aplica | Falha permanente; evento movido para `webhook_dead_letter` com payload, motivo da falha e timestamp | FDD-RES-02 |
+| Tentativas esgotadas | não se aplica (worker) | não se aplica | Falha permanente; evento movido para `webhook_dead_letter` com payload, motivo da falha e timestamp | FDD-RES-02 |
 
 **Integração do tratamento de erros com o código existente**
 - `src/shared/errors/app-error.ts`: as classes `WEBHOOK_*` estendem `AppError` (`statusCode`, `errorCode`, `details`).
@@ -364,7 +364,7 @@ Os códigos do módulo usam o prefixo `WEBHOOK_`. A coluna Rastreio aponta o ID 
 
 **Estratégias de resiliência**
 - Timeout: 10 segundos por chamada HTTP do worker.
-- Retries: no máximo 5 tentativas no total, incluindo o envio inicial, com backoff exponencial na progressão de 1m, 5m, 30m, 2h e 12h (ADR-004).
+- Retries: 5 tentativas com backoff exponencial de 1m, 5m, 30m, 2h e 12h (ADR-004).
 - Desacoplamento: a chamada HTTP sai da transação de `changeStatus`; a disponibilidade do cliente não afeta a mudança de status.
 - Isolamento de processo: o worker roda separado da API, e um reinício da API não o derruba (ADR-003).
 - Leitura controlada: só pendentes, em batch pequeno, com índices em status e `created_at`.
@@ -383,7 +383,6 @@ Os códigos do módulo usam o prefixo `WEBHOOK_`. A coluna Rastreio aponta o ID 
 - URL de webhook é sempre `https`.
 - Cada endpoint tem secret única; nunca há secret global.
 - Payload enviado nunca passa de 64KB.
-- Nenhum evento recebe mais de 5 tentativas.
 - Com um único worker, eventos do mesmo `order_id` são processados em ordem de `created_at`.
 
 ---
@@ -444,7 +443,7 @@ Os códigos do módulo usam o prefixo `WEBHOOK_`. A coluna Rastreio aponta o ID 
 - A entrega contém `Content-Type: application/json`, `X-Event-Id`, `X-Signature`, `X-Timestamp` e `X-Webhook-Id`, e `X-Signature` confere com o HMAC-SHA256 do corpo calculado com a secret do endpoint.
 - O payload contém `event_id`, `event_type` `order.status_changed`, timestamp ISO 8601, `order_id`, `order_number`, `from_status`, `to_status`, `customer_id` e `total_cents`, sem items.
 - Endpoint de cliente que não responde em 10 segundos gera falha da tentativa e agendamento de nova tentativa.
-- Um evento recebe no máximo 5 tentativas no total, incluindo o envio inicial; ao esgotar, o evento está na `webhook_dead_letter` com payload, motivo da falha e timestamp.
+- Os intervalos entre tentativas seguem 1m, 5m, 30m, 2h e 12h; ao esgotar, o evento está na `webhook_dead_letter` com payload, motivo da falha e timestamp.
 - `POST /api/v1/admin/webhooks/dead-letter/:id/replay` retorna `403` para OPERATOR; para ADMIN, recoloca o evento na outbox como pendente e gera log com o id do usuário.
 - Cadastro ou edição com url `http` retorna `400`.
 - A secret é gerada pela plataforma e devolvida na criação; cada webhook tem secret distinta.
@@ -484,7 +483,7 @@ Os códigos do módulo usam o prefixo `WEBHOOK_`. A coluna Rastreio aponta o ID 
     - Destaque no portal de desenvolvedor
 - **Plano de contingência:**
 
-### Cliente indisponível além da janela de retentativas
+### Cliente indisponível além da janela de quase 15 horas
 
 - **Probabilidade:**
 - **Impacto:** evento em falha permanente, aceito pelo produto

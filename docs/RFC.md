@@ -31,7 +31,7 @@ Adotar o padrão outbox no MySQL existente: ao mudar o status, a mesma transaç�
 - `changeStatus` em `src/modules/orders/order.service.ts`: passa a inserir o evento na outbox dentro da própria transação; se a inserção falhar, a mudança de status sofre rollback (ADR-001).
 - Configuração de webhook: armazena url, secret, `customer_id`, estado ativo e a lista de status que o endpoint quer receber.
 - Worker de webhooks: processo Node separado, com entry-point `src/worker.ts`, script `npm run worker` e instância própria de `PrismaClient` sobre a mesma `DATABASE_URL`, que faz polling a cada 2 segundos dos eventos pendentes mais antigos (ADR-002, ADR-003).
-- Política de retry: 5 tentativas no total, incluindo o envio inicial, com backoff de 1m, 5m, 30m, 2h e 12h (ADR-004).
+- Política de retry: 5 tentativas com backoff de 1m, 5m, 30m, 2h e 12h (ADR-004).
 - `webhook_dead_letter`: tabela separada para falhas permanentes, com payload, motivo da falha e timestamp, reprocessável manualmente por endpoint admin (ADR-005).
 - Assinatura: HMAC-SHA256 sobre o corpo do request, enviada em `X-Signature`, com secret única por endpoint e rotação com grace period de 24 horas (ADR-006).
 - Identificador de evento: UUID gerado na entrada da outbox e enviado em `X-Event-Id`, base da garantia at-least-once (ADR-007).
@@ -101,14 +101,8 @@ As demais alternativas descartadas (worker no processo da API, 3 tentativas, ret
 
 ### Contagem das 5 tentativas
 
-- **Situação:** decidida após a reunião
-- **Ponto levantado:** a reunião não disse se as 5 tentativas incluíam o envio inicial. Decisão posterior: as 5 tentativas incluem o envio inicial, totalizando 5 envios. Ver ADR-004.
-- **Responsável:** não definido na reunião.
-
-### Aplicação dos intervalos de backoff com 5 tentativas no total
-
 - **Situação:** não decidida
-- **Ponto levantado:** com 5 tentativas incluindo o envio inicial, há 4 retentativas, mas a progressão decidida tem 5 intervalos (1m, 5m, 30m, 2h e 12h). Não está definido qual intervalo deixa de ser usado ou se o último intervalo antecede a ida para a DLQ. Ver ADR-004.
+- **Ponto levantado:** não foi dito se as 5 tentativas incluem o envio inicial, embora a progressão de backoff tenha 5 intervalos. Ver ADR-004.
 - **Responsável:** não definido na reunião.
 
 ### Papel do status "falhou" da outbox ao lado da DLQ

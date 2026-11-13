@@ -61,10 +61,9 @@
 | RFC-ALT-04 | `docs/RFC.md` | Alternativa Descartada | Garantia exactly-once (ver ADR-007-ALT-01) | TRANSCRICAO | [09:25] Sofia; [09:25] Diego |
 | RFC-OPEN-01 | `docs/RFC.md` | Ponto em Aberto | Rate limiting de envio: observar e decidir depois | TRANSCRICAO | [09:38] Diego; [09:39] Diego; [09:39] Larissa; [09:48] Larissa |
 | RFC-OPEN-02 | `docs/RFC.md` | Ponto em Aberto | Escala para múltiplos workers e perda de ordenação, "problema do futuro" | TRANSCRICAO | [09:12] Diego; [09:13] Diego; [09:13] Larissa |
-| RFC-OPEN-03 | `docs/RFC.md` | Decisão | Decidido após a reunião: as 5 tentativas incluem o envio inicial (ver LAC-01) | TRANSCRICAO | [09:17] Diego; [09:17] Larissa |
+| RFC-OPEN-03 | `docs/RFC.md` | Ponto em Aberto | Se as 5 tentativas incluem o envio inicial (ver LAC-01) | TRANSCRICAO | [09:17] Diego; [09:17] Larissa |
 | RFC-OPEN-04 | `docs/RFC.md` | Ponto em Aberto | Papel do status "falhou" da outbox ao lado da DLQ (ver LAC-02) | TRANSCRICAO | [09:08] Diego; [09:18] Diego |
 | RFC-OPEN-05 | `docs/RFC.md` | Ponto em Aberto | Armazenamento da secret e qual secret assina no grace period (ver LAC-03) | TRANSCRICAO | [09:21] Sofia; [09:46] Sofia |
-| RFC-OPEN-06 | `docs/RFC.md` | Ponto em Aberto | Com 5 tentativas incluindo o envio inicial, há 4 retentativas para 5 intervalos de backoff | TRANSCRICAO | [09:17] Diego; [09:17] Larissa |
 | RFC-OPEN-07 | `docs/RFC.md` | Ponto em Aberto | `customer_id` no body ou no path não foi escolhido | TRANSCRICAO | [09:32] Larissa; [09:33] Bruno |
 | RFC-OPEN-08 | `docs/RFC.md` | Ponto em Aberto | Replay preserva ou não o `event_id` original | TRANSCRICAO | [09:18] Diego; [09:25] Diego |
 | RFC-OPEN-09 | `docs/RFC.md` | Ponto em Aberto | Outbox com uma linha por evento ou por webhook interessado | TRANSCRICAO | [09:34] Bruno; [09:44] Sofia |
@@ -128,7 +127,7 @@
 | FDD-ERRO-05 | `docs/FDD.md` | Integração | `errorMiddleware` reutilizado sem alteração; erro desconhecido vira 500 `INTERNAL_SERVER_ERROR` | CODIGO | `src/middlewares/error.middleware.ts` |
 | FDD-ERRO-06 | `docs/FDD.md` | Integração | `validate` converte `ZodError` em `ValidationError` 400 | CODIGO | `src/middlewares/validate.middleware.ts` |
 | FDD-ERRO-07 | `docs/FDD.md` | Integração | `authenticate` gera 401 e `requireRole('ADMIN')` gera 403 no replay | CODIGO | `src/middlewares/auth.middleware.ts` |
-| FDD-RES-01 | `docs/FDD.md` | Decisão | Resiliência por timeout de 10s, no máximo 5 tentativas com backoff exponencial, processo separado e leitura em batch (ver ADR-003, ADR-004) | TRANSCRICAO | [09:42] Diego; [09:17] Larissa; [09:11] Diego; [09:08] Diego |
+| FDD-RES-01 | `docs/FDD.md` | Decisão | Resiliência por timeout de 10s, 5 tentativas com backoff 1m/5m/30m/2h/12h, processo separado e leitura em batch (ver ADR-003, ADR-004) | TRANSCRICAO | [09:42] Diego; [09:17] Larissa; [09:11] Diego; [09:08] Diego |
 | FDD-RES-02 | `docs/FDD.md` | Decisão | Fallback por DLQ e replay manual; email como fallback na próxima fase | TRANSCRICAO | [09:18] Diego; [09:48] Larissa |
 | FDD-INV-01 | `docs/FDD.md` | Restrição | Invariantes: status commitado com evento, payload snapshot, url `https`, secret única, payload até 64KB | TRANSCRICAO | [09:41] Diego; [09:52] Larissa; [09:23] Sofia; [09:21] Sofia; [09:24] Larissa |
 | FDD-OBS-01 | `docs/FDD.md` | Requisito Não Funcional | Métricas a partir de tempo de resposta e resultado por entrega, status da outbox e registros da DLQ | TRANSCRICAO | [09:34] Marcos; [09:08] Diego; [09:18] Diego |

@@ -31,7 +31,7 @@ Adotar o padrão outbox no MySQL existente: ao mudar o status, a mesma transaç�
 - `changeStatus` em `src/modules/orders/order.service.ts`: passa a inserir o evento na outbox dentro da própria transação; se a inserção falhar, a mudança de status sofre rollback (ADR-001).
 - Configuração de webhook: armazena url, secret, `customer_id`, estado ativo e a lista de status que o endpoint quer receber.
 - Worker de webhooks: processo Node separado, com entry-point `src/worker.ts`, script `npm run worker` e instância própria de `PrismaClient` sobre a mesma `DATABASE_URL`, que faz polling a cada 2 segundos dos eventos pendentes mais antigos (ADR-002, ADR-003).
-- Política de retry: 5 tentativas com backoff de 1m, 5m, 30m, 2h e 12h (ADR-004).
+- Política de retry: 5 tentativas no total, incluindo o envio inicial, com backoff de 1m, 5m, 30m, 2h e 12h (ADR-004).
 - `webhook_dead_letter`: tabela separada para falhas permanentes, com payload, motivo da falha e timestamp, reprocessável manualmente por endpoint admin (ADR-005).
 - Assinatura: HMAC-SHA256 sobre o corpo do request, enviada em `X-Signature`, com secret única por endpoint e rotação com grace period de 24 horas (ADR-006).
 - Identificador de evento: UUID gerado na entrada da outbox e enviado em `X-Event-Id`, base da garantia at-least-once (ADR-007).
@@ -101,8 +101,14 @@ As demais alternativas descartadas (worker no processo da API, 3 tentativas, ret
 
 ### Contagem das 5 tentativas
 
+- **Situação:** decidida após a reunião
+- **Ponto levantado:** a reunião não disse se as 5 tentativas incluíam o envio inicial. Decisão posterior: as 5 tentativas incluem o envio inicial, totalizando 5 envios. Ver ADR-004.
+- **Responsável:** não definido na reunião.
+
+### Aplicação dos intervalos de backoff com 5 tentativas no total
+
 - **Situação:** não decidida
-- **Ponto levantado:** não foi dito se as 5 tentativas incluem o envio inicial, embora a progressão de backoff tenha 5 intervalos. Ver ADR-004.
+- **Ponto levantado:** com 5 tentativas incluindo o envio inicial, há 4 retentativas, mas a progressão decidida tem 5 intervalos (1m, 5m, 30m, 2h e 12h). Não está definido qual intervalo deixa de ser usado ou se o último intervalo antecede a ida para a DLQ. Ver ADR-004.
 - **Responsável:** não definido na reunião.
 
 ### Papel do status "falhou" da outbox ao lado da DLQ
@@ -116,6 +122,72 @@ As demais alternativas descartadas (worker no processo da API, 3 tentativas, ret
 - **Situação:** não decidida
 - **Ponto levantado:** a reunião definiu secret por endpoint e validade paralela de 24 horas na rotação, mas não definiu como a secret é armazenada nem qual secret assina os envios durante o grace period. Ver ADR-006.
 - **Responsável:** não definido na reunião; HMAC e geração de secret passam pela revisão de segurança de Sofia.
+
+### Forma de passar o `customer_id` na API de configuração
+
+- **Situação:** não decidida
+- **Ponto levantado:** o `customer_id` não vem do JWT e é passado "no body ou no path"; a escolha entre as duas formas não foi feita.
+- **Responsável:** não definido na reunião.
+
+### Identificador do evento no replay da DLQ
+
+- **Situação:** não decidida
+- **Ponto levantado:** o replay recoloca o evento na outbox como pendente, e o `X-Event-Id` é um UUID gerado quando o evento entra na outbox. Não foi definido se o replay preserva o `event_id` original ou gera um novo, o que afeta a deduplicação no cliente. Ver ADR-005 e ADR-007.
+- **Responsável:** não definido na reunião.
+
+### Granularidade da linha na outbox
+
+- **Situação:** não decidida
+- **Ponto levantado:** o filtro por lista de status é aplicado na inserção da outbox, e o envio leva o header `X-Webhook-Id`. Não foi definido se a outbox recebe uma linha por evento ou uma linha por webhook interessado quando o customer tem mais de um cadastro.
+- **Responsável:** não definido na reunião.
+
+### Momento da verificação do limite de 64KB
+
+- **Situação:** não decidida
+- **Ponto levantado:** o limite de 64KB foi decidido, com erro se ultrapassado, mas não o momento da verificação. Se for na inserção, dentro da transação de `changeStatus`, um payload acima do limite desfaz a mudança de status; se for no envio, o evento é recusado pelo worker.
+- **Responsável:** não definido na reunião.
+
+### Campos básicos da order no payload
+
+- **Situação:** não decidida
+- **Ponto levantado:** o payload inclui "os campos básicos da order", com `total_cents` citado como exemplo; a lista completa desses campos não foi definida.
+- **Responsável:** não definido na reunião.
+
+### Rota e formato do endpoint de rotação de secret
+
+- **Situação:** não decidida
+- **Ponto levantado:** foi decidido haver um endpoint para o cliente pedir nova secret pela API, mas não a rota, o método nem o formato da requisição e da resposta. Ver ADR-006.
+- **Responsável:** não definido na reunião.
+
+### Persistência do histórico de entregas
+
+- **Situação:** não decidida
+- **Ponto levantado:** o endpoint `GET /webhooks/:id/deliveries` deve mostrar sucesso ou falha, payload, response e tempo de resposta das entregas, mas não foi definido onde e como esses dados são gravados; as novas tabelas citadas são outbox, dead letter e configuração de webhook.
+- **Responsável:** não definido na reunião.
+
+### Código de erro para url não `https`
+
+- **Situação:** não decidida
+- **Ponto levantado:** a url `http` é recusada "com erro de validação" no schema Zod, e o código `WEBHOOK_INVALID_URL` foi listado para o módulo. Pelo middleware de validação atual (`src/middlewares/validate.middleware.ts`), um erro do schema Zod sai como `VALIDATION_ERROR`; não foi definido qual dos dois códigos o cliente recebe.
+- **Responsável:** não definido na reunião.
+
+### Situação do erro `WEBHOOK_SECRET_REQUIRED`
+
+- **Situação:** não decidida
+- **Ponto levantado:** o código `WEBHOOK_SECRET_REQUIRED` foi listado para o módulo, mas a secret é gerada pela plataforma e devolvida na criação; a situação em que esse erro ocorre não foi definida.
+- **Responsável:** não definido na reunião.
+
+### Critério de sucesso da entrega
+
+- **Situação:** não decidida
+- **Ponto levantado:** em caso de sucesso o evento é marcado como entregue, e a falta de resposta em 10 segundos é tratada como falha; não foi definido qual resposta do cliente (faixa de status HTTP) conta como sucesso.
+- **Responsável:** não definido na reunião.
+
+### Prazo de entrega para a Atlas
+
+- **Situação:** não decidida
+- **Ponto levantado:** a Atlas é citada primeiro com prazo "até fim do trimestre" e depois com prazo "pra fim de novembro". A estimativa de três sprints foi feita sobre o fim de novembro, e a divergência entre os dois prazos não foi esclarecida.
+- **Responsável:** não definido na reunião; Marcos confirmaria o prazo com a Atlas.
 
 ---
 

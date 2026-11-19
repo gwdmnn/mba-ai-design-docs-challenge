@@ -4,9 +4,9 @@
 
 ## Sobre o desafio
 
-O ponto de partida foi a transcrição de uma reunião técnica de cerca de 55 minutos (`TRANSCRICAO.md`). Nela, tech lead, PM, e engenheiros decidem como construir um **Sistema de Webhooks de Notificação de Pedidos** para um Order Management System já em produção (Node 20 + TypeScript, Express, Prisma + MySQL). A tarefa era transformar essa conversa, junto com o código existente, num pacote de design docs (PRD, RFC, FDD, ADRs e Tracker) detalhado o bastante para o time começar a implementar, usando IA como ferramenta principal de produção.
+O ponto de partida foi a transcrição de uma reunião técnica de cerca de 55 minutos (`TRANSCRICAO.md`). Nela, tech lead, PM e engenheiros decidem como construir um **Sistema de Webhooks de Notificação de Pedidos** para um Order Management System já em produção (Node 20 + TypeScript, Express, Prisma + MySQL). A tarefa era transformar essa conversa, junto com o código existente, num pacote de design docs (PRD, RFC, FDD, ADRs e Tracker) detalhado o bastante para o time começar a implementar, usando IA como ferramenta principal de produção.
 
-O foco foi usar como redatora, aplicando conceitos vistos no módulo de Design Docs do MBA de IA, e não como engenheira: não se tratava de criar uma solução nova, mas de registrar a decisão tomada na reunião e consolidá-la em documentos formais. O maior desafio foi na escrita dos prompts, tentando encontrar uma maneira de instruir a IA a produzir cada documento de forma que um não repetisse o conteúdo do outro, e que cada decisão tivesse rastreabilidade até a transcrição ou até o código.
+O foco foi usar a IA como redatora, aplicando conceitos vistos no módulo de Design Docs do MBA de IA, e não como engenheira: não se tratava de criar uma solução nova, mas de registrar a decisão tomada na reunião e consolidá-la em documentos formais. O maior desafio foi na escrita dos prompts, tentando encontrar uma maneira de instruir a IA a produzir cada documento de forma que um não repetisse o conteúdo do outro, e que cada decisão tivesse rastreabilidade até a transcrição ou até o código.
 
 ## Ferramentas de IA utilizadas
 
@@ -33,7 +33,72 @@ A revisão foi realizada com o documento aberto ao lado do tracker. Toda afirma�
 
 ## Prompts customizados
 
-Todos os prompts estão em [`prompts/`](prompts/).
+Todos os prompts estão em [`prompts/`](prompts/). Seguem dois trechos representativos.
+
+### Criação das ADRs ([`prompts/criacao-adr.md`](prompts/criacao-adr.md))
+
+Este prompt definiu a disciplina usada no resto do trabalho: nada pode ser deduzido, a triagem fica registrada num arquivo e o tracker é preenchido durante a execução.
+
+```markdown
+Você é um engenheiro de software especialista em produto e documentação. Sua função é criar ADRS (architectural decision records) durante a concepção de novas features.
+
+## Requisitos
+
+- Cada ADR deve obrigatoriamente ser entregue seguindo estritamente o template de ADR disponível em `/docs/templates`.
+- Pelo menos 1 ADR deve referenciar explicitamente arquivos, módulos ou padrões do código existente.
+- Apenas informações extraídas da transcrição podem ser descritas na ADR, sem deduções que não sejam explícitas.
+- Manter a triagem da leitura da transcrição dentro do `/docs/transcription_analysis.md`.
+- Manter referências e decisões no documento `/docs/tracker.md`.
+
+## Workflow
+
+1. Ler a transcrição e identificar imediatamente o que será considerado no desenvolvimento, e o que será descartado. Essa etapa será realizada por um agente especializado, que deverá preencher o resultado no `transcription_analysis.md`.
+2. Em cima do que será considerado, identificar decisões que tem potencial de virar uma ADR. Lembrando que, cada decisão diz respeito a uma única ADR.
+3. Se existirem mais de 8 candidatas, verificar quais delas podem ser movidas para outro documento (ex.: FDD), a fim de manter o limite de 8 ADRs.
+4. Para cada candidata, ler os trechos da transcrição referenciada no `transcription_analysis.md` e preencher a ADR seguindo o padrão definido no template.
+5. O `tracker.md` deve ser preenchido com cada decisão que for tomada para criação do ADR, seguindo sua estrutura pré definida.
+6. Por último, verificar cada ADR, sua referência à transcrição, e se atende ao que foi falado na reunião e a estrutura do template.
+
+## Negativas
+
+- Não preencha a ADR com informações deduzidas, apenas com o que foi explicitado na reunião.
+- Não altere trechos existentes de código. Essa tarefa é puramente documental.
+- Não invente informações para colocar em placeholders do template que eventualmente ficarão vazios.
+```
+
+O prompt também traz um guia de quando usar e quando não usar ADRs, com a regra dos 3 Es, para a IA não transformar qualquer escolha técnica em ADR.
+
+### Criação do FDD ([`prompts/criacao-fdd.md`](prompts/criacao-fdd.md))
+
+O FDD é o documento mais próximo do código, então o prompt exige caminhos reais e pede que a integração seja considerada desde o início.
+
+```markdown
+## Requisitos
+
+- O FDD deverá seguir estritamente o modelo disponível em `/docs/templates`.
+- O FDD deve ser elaborado seguindo apenas o que foi decidido e consta nos documentos de referência (ADRs e RFC).
+- Matriz de erros previstos com códigos no padrão WEBHOOK_*. Esta seção deve nomear pelo menos 4 caminhos de arquivo reais do código base e descrever como o módulo de webhooks vai se integrar com cada um (por exemplo, como o método changeStatus será estendido, como as classes de erro existentes serão reutilizadas)
+- Estratégias de resiliência (timeouts, retries, backoff, fallback).
+- Deve conter uma seção "Integração com o sistema existente". Leve essa integração em consideração durante todo o workflow, de forma que a FDD seja escrita pensando também na integração.
+- Seção "Observabilidade" cita métricas, logs e tracing.
+- Seção "Contratos públicos" inclui pelo menos 4 endpoints HTTP com payload de exemplo (request e response) e status codes.
+
+## Workflow
+
+1. Ler as ADRs e o RFC disponíveis em `/docs`.
+2. Carregue o template em `/docs/template`
+3. Para cada seção do FDD, faça uma busca nos ADRs e RFC por informações que devem ser incluídas na seção, e consolide-as de forma técnica e concisa.
+4. Para cada seção do FDD, Busque no código informações relevantes para complementá-la.
+5. No decorrer da execução, mantenha atualizado o documento `/docs/tracker.md`, respeitando a formatação já existente do documento.
+6. Releia o FDD de forma a corrigi-lo contra o template, verificando também se todas as informações ali constantes estão de fato no código e/ou nos demais documentos de referência (RFC e ADRs).
+
+## Negativas
+
+- Não preencha a FDD com informações deduzidas, apenas com o que foi explicitado nos documentos de referência.
+- Não use emojis e/ou travessão.
+```
+
+Os outros prompts são [`criacao-templates-design-docs.md`](prompts/criacao-templates-design-docs.md), [`criacao-rfc.md`](prompts/criacao-rfc.md) e [`criacao-prd.md`](prompts/criacao-prd.md).
 
 ## Iterações e ajustes
 
